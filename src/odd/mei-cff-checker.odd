@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="http://www.schematron.com/resources/xsd/schematron.xsd"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0"       
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.tei-c.org/ns/1.0 http://www.tei-c.org/release/tei-p5-all.xsd" 
+  xmlns:sch="http://purl.oclc.org/dsdl/schematron"
+  xml:lang="en">
+  
+  <teiHeader>
+    <fileDesc>
+      <titleStmt>
+        <title>CFF/MEI 5.1 Element Presence Validation ODD</title>
+        <author>Daniel Jettka</author>
+      </titleStmt>
+      <publicationStmt>
+        <p>Validates presence of specific elements in MEI 5.1 documents.</p>
+      </publicationStmt>
+    </fileDesc>
+  </teiHeader>
+  
+  <!-- Module Definitions -->
+  <modules>
+    <!-- We rely on the standard MEI module definitions -->
+    <moduleDef name="mei" schema="http://www.music-encoding.org/ns/mei/5.1/mei-all.rng">
+      <!-- This references the official MEI 5.1 RNG schema for structure -->
+    </moduleDef>
+  </modules>
+  
+  <!-- Schematron Rules -->
+  <sch:schematron>
+    <sch:title>MEI 5.1 Presence Rules</sch:title>
+    
+    <!-- MINIMUM REQUIREMENTS-->
+    <!-- Hint: additional required fields cff-version and message are filled automatically in separate MEI2CFF converter-->
+    <sch:pattern>
+      <sch:title>Check for Required Infos</sch:title>
+
+      
+      <sch:rule context="/*">
+        
+        <!-- Check for the presence of <mei> root element (Standard, but good to assert) -->
+        <sch:assert test="local-name() = 'mei'" role="error">
+          Root element must be &lt;mei&gt;.
+        </sch:assert>
+
+        <!-- Check for MEI version on mei element equals 5.1 -->
+        <sch:assert test="@meiversion = '5.1'" role="error">
+          The &lt;mei&gt; element must have a meiversion attribute with value '5.1'.
+        </sch:assert>
+
+      </sch:rule>
+      
+      
+      <sch:rule context="/mei:mei/mei:meiHead/mei:fileDesc/mei:titleStmt">
+
+        <!-- Check for author/person info in titleStmt > CFF field: authors -->
+        <sch:assert test="./mei:respStmt/mei:persName || ./mei:author" role="error">
+          A &lt;respStmt/persName&gt; or &lt;author&gt; element must be present in &lt;titleStmt&gt;.
+        </sch:assert>
+
+        <!-- Check for title in titleStmt > CFF field: title -->
+        <sch:assert test=".//mei:fileDesc/mei:titleStmt/mei:title" role="error">
+          A &lt;title&gt; element must be present within &lt;titleStmt&gt;.
+        </sch:assert>
+        
+      </sch:rule>
+
+    </sch:pattern>
+
+
+    <!-- OPTIONAL REQUIREMENTS -->
+
+    <sch:pattern>
+      <sch:title>Check for Optional Infos</sch:title>
+      
+    </sch:pattern>
+    
+  </sch:schematron>
+  
+  <!-- 4. Output Configuration -->
+  <output>
+    <outputModule name="schematron"/>
+  </output>
+  
+</TEI>

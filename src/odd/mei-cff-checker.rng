@@ -1,0 +1,45 @@
+default namespace = "http://www.tei-c.org/ns/1.0"
+namespace sch = "http://purl.oclc.org/dsdl/schematron"
+
+start =
+  element TEI {
+    attribute schemaLocation { text },
+    attribute xml:lang { xsd:NCName },
+    element teiHeader {
+      element fileDesc {
+        element titleStmt {
+          element title { text },
+          element author { text }
+        },
+        element publicationStmt {
+          element p { text }
+        }
+      }
+    },
+    element modules {
+      element moduleDef {
+        attribute name { xsd:NCName },
+        attribute schema { xsd:anyURI }
+      }
+    },
+    element sch:schematron {
+      title,
+      element sch:pattern {
+        title,
+        element sch:rule {
+          attribute context { text },
+          element sch:assert {
+            attribute role { xsd:NCName },
+            attribute test { text },
+            text
+          }+
+        }*
+      }+
+    },
+    element output {
+      element outputModule {
+        attribute name { xsd:NCName }
+      }
+    }
+  }
+title = element sch:title { text }
