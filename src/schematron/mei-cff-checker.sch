@@ -3,10 +3,12 @@
     xmlns:sqf="http://www.schematron-quickfix.com/validator/process"
     xmlns:mei="http://www.music-encoding.org/ns/mei">
 
-    <title>MEI 5.1 Presence Rules</title>
+    <title>MEI 5.1 Presence Rules for mapping to Citation File Format (CFF)</title>
     
+    <!-- namespace declaration -->
     <ns prefix="mei" uri="http://www.music-encoding.org/ns/mei" />
     
+
     <!-- MINIMUM REQUIREMENTS -->
     <pattern>
         <title>Check for Required Infos</title>
@@ -41,40 +43,17 @@
         </rule>
     </pattern>
     
+
     <!-- OPTIONAL REQUIREMENTS -->
     <pattern>
         <title>Check for Optional Infos</title>
         
+        <!-- new rule context -->
         <rule context="/*">
-
-            <!-- Check for abstract information -> CFF field: abstract -->
-            <assert test=".//mei:fileDesc/mei:sourceDesc/mei:source/mei:abstract or .//mei:fileDesc/mei:sourceDesc/mei:source/mei:p" role="warning">
-                WARNING: Cannot derive abstract because no &lt;source/abstract&gt; or &lt;source/p&gt; is present.
-            </assert>
-
-            <!-- Check for contact information -> CFF field: contact -->
-            <assert test=".//mei:fileDesc/mei:pubStmt/mei:publisher/mei:persName or .//mei:fileDesc/mei:pubStmt/mei:name or .//mei:fileDesc/mei:pubStmt/mei:publisher/mei:corpName" role="warning">
-                WARNING: Cannot derive contact because no &lt;publisher/persName&gt;, &lt;publisher/name&gt;, or &lt;publisher/corpName&gt; is present.
-            </assert>
-
-            <!-- Check for date information -> CFF field: date-released -->
-            <assert test=".//mei:fileDesc/mei:pubStmt/mei:date" role="warning">
-                WARNING: Cannot derive date-released because no &lt;pubStmt/date&gt; is present.
-            </assert>
-
-            <!-- Check for identifiers information -> CFF field: identifiers -->
-            <assert test=".//mei:fileDesc/mei:pubStmt/mei:identifier" role="warning">
-                WARNING: Cannot derive identifiers because no &lt;pubStmt/identifier&gt; is present.
-            </assert>
-
+            
             <!-- Check for keywords information -> CFF field: keywords -->
             <assert test=".//mei:fileDesc/mei:titleStmt/mei:keywords" role="warning">
                 WARNING: Cannot derive keywords because no &lt;titleStmt/keywords&gt; is present.
-            </assert>
-
-            <!-- Check for license information -> CFF field: license -->
-            <assert test=".//mei:fileDesc/mei:pubStmt/mei:availability/mei:accessRestrict or .//mei:fileDesc/mei:pubStmt/mei:availability/mei:identifier or .//mei:fileDesc/mei:pubStmt/mei:availability/mei:useRestrict" role="warning">
-                WARNING: Cannot derive license because no &lt;accessRestrict&gt;, &lt;identifier&gt;, or &lt;useRestrict&gt; is present within &lt;pubStmt/availability&gt;.
             </assert>
 
             <!-- Check for repository information -> CFF field: repository -->
@@ -93,6 +72,44 @@
             </assert>
 
         </rule>
+
+
+        <!-- new rule context -->
+        <rule context="//mei:fileDesc/mei:sourceDesc/mei:source">
+
+            <!-- Check for abstract information -> CFF field: abstract -->
+            <assert test="./mei:abstract or ./mei:p" role="warning">
+                WARNING: Cannot derive abstract because no &lt;source/abstract&gt; or &lt;source/p&gt; is present.
+            </assert>
+
+        </rule>
+
+
+        <!-- new rule context -->
+        <rule context="//mei:fileDesc/mei:pubStmt">
+
+            <!-- Check for contact information -> CFF field: contact -->
+            <assert test="./mei:publisher/mei:persName or ./mei:name or ./mei:publisher/mei:corpName" role="warning">
+                WARNING: Cannot derive contact because no &lt;publisher/persName&gt;, &lt;publisher/name&gt;, or &lt;publisher/corpName&gt; is present.
+            </assert>
+
+            <!-- Check for date information -> CFF field: date-released -->
+            <assert test="./mei:date" role="warning">
+                WARNING: Cannot derive date-released because no &lt;pubStmt/date&gt; is present.
+            </assert>
+
+            <!-- Check for identifiers information -> CFF field: identifiers -->
+            <assert test="./mei:identifier" role="warning">
+                WARNING: Cannot derive identifiers because no &lt;pubStmt/identifier&gt; is present.
+            </assert>
+
+            <!-- Check for license information -> CFF field: license -->
+            <assert test="./mei:availability/mei:accessRestrict or ./mei:availability/mei:identifier or ./mei:availability/mei:useRestrict" role="warning">
+                WARNING: Cannot derive license because no &lt;accessRestrict&gt;, &lt;identifier&gt;, or &lt;useRestrict&gt; is present within &lt;pubStmt/availability&gt;.
+            </assert>
+
+        </rule>
+
     </pattern>
     
     
