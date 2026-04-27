@@ -13,7 +13,10 @@
 
     <!-- Match root element -->
     <xsl:template match="/">
-        <xsl:call-template name="generate-oai_dc-xml"/>
+        <!-- Only generate Dublin Core metadata if the input file is an MEI file with version 5.x -->
+        <xsl:if test="mei:mei and mei:mei/@meiversion and starts-with(mei:mei/@meiversion, '5')">
+            <xsl:call-template name="generate-oai_dc-xml"/>
+        </xsl:if>
     </xsl:template>
 
 
