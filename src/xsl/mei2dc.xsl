@@ -14,9 +14,14 @@
     <!-- Match root element -->
     <xsl:template match="/">
         <!-- Only generate Dublin Core metadata if the input file is an MEI file with version 5.x -->
-        <xsl:if test="mei:mei and mei:mei/@meiversion and starts-with(mei:mei/@meiversion, '5')">
-            <xsl:call-template name="generate-oai_dc-xml"/>
-        </xsl:if>
+        <xsl:choose>
+            <xsl:when test="mei:mei and mei:mei/@meiversion and starts-with(mei:mei/@meiversion, '5')">
+                <xsl:call-template name="generate-oai_dc-xml"/>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:message terminate="yes">Input file is not a valid MEI file with version 5.x. No Dublin Core metadata generated.</xsl:message>
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:template>
 
 
