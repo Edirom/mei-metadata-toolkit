@@ -19,7 +19,7 @@
                 <xsl:call-template name="generate-oai_dc-xml"/>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:message terminate="yes">Input file is not a valid MEI file with version 5.x. No Dublin Core metadata generated.</xsl:message>
+                <xsl:message>Input file is not a valid MEI file with version 5.x. No Dublin Core metadata generated.</xsl:message>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
