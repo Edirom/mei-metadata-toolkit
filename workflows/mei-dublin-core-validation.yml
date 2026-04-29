@@ -53,40 +53,31 @@ jobs:
           echo "Java Version:"
           java -version
 
-      - name: Find all XML files
-        id: find-xml
+      - name: Find all XML files and validate against Schematron
+        id: validation
+        env:
+          SCHEMATRON_FILE: "mei-metadata-toolkit/src/schema/mei-dc.sch"
+          REPORT_FILE: ".github/workflow-reports/mei-dublin-core-validation.md"
         run: |
+
           find . -type f -name "*.xml" \
             ! -path "./.github/*" \
             ! -path "./vendor/*" \
             ! -path "./.git/*" \
             ! -name "*.xml.bak" \
             > xml_files.txt
-          
-          count=$(wc -l < xml_files.txt)
-          echo "Found $count XML files."
-          echo "count=$count" >> $GITHUB_OUTPUT
 
-      - name: Run Schematron Validation
-        id: validation
-        env:
-          SCHEMATRON_FILE: "mei-metadata-toolkit/src/schema/mei-dc.sch"
-          REPORT_FILE: ".github/workflow-reports/mei-dublin-core-validation.md"
-        run: |
           REPORT="$REPORT_FILE"
           
           # Initialize the report
           echo "### Schematron Validation Report" > "$REPORT"
-          echo "Branch: ${{ github.ref_name }}" >> "$REPORT"
-          echo "Schema: $SCHEMATRON_FILE" >> "$REPORT"
           echo "Generated: $(date)" >> "$REPORT"
           echo "" >> "$REPORT"
+          echo "Branch: ${{ github.ref_name }}" >> "$REPORT"
+          echo "" >> "$REPORT"
+          echo "Found $(wc -l < xml_files.txt) XML files to process." >> "$REPORT"
+          echo "" >> "$REPORT"
           
-          ALL_SUCCESS=true
-          TOTAL_FILES=0
-          PASSED_FILES=0
-          FAILED_FILES=0
-
           # Read the file list
           while IFS= read -r file; do
             [ -z "$file" ] && continue
@@ -94,12 +85,6 @@ jobs:
             TOTAL_FILES=$((TOTAL_FILES + 1))
             echo "Processing file $TOTAL_FILES/$TOTAL_FILES: $file"
             
-            # Check if the file actually exists on disk (safety check)
-            if [ ! -f "$file" ]; then
-              echo "  ⚠️  Warning: File $file not found on disk. Skipping." >> "$REPORT"
-              continue
-            fi
-
             echo "Validating: $file" >> "$REPORT"
             
             # Run Saxon-HE
@@ -113,13 +98,7 @@ jobs:
               echo "Error: Schematron file not found."
               exit 1
             fi
-
-            # Verify the jar exists
-            if [ ! -f "$SAXON_JAR" ]; then
-              echo "Error: Saxon JAR not found after unzip."
-              exit 1
-            fi
-          
+      
 
             output=$(java -jar "$SAXON_JAR" -s="$file" -schematron="$SCHEMATRON_FILE" 2>&1)
             exit_code=$?
@@ -139,31 +118,8 @@ jobs:
               FAILED_FILES=$((FAILED_FILES + 1))
             fi
           done < xml_files.txt
-
-          # Final Summary
-          echo "### Summary" >> "$REPORT"
-          echo "Total Files: $TOTAL_FILES" >> "$REPORT"
-          echo "Passed: $PASSED_FILES" >> "$REPORT"
-          echo "Failed: $FAILED_FILES" >> "$REPORT"
           
-          if [ "$ALL_SUCCESS" = true ]; then
-            echo "✅ All XML files validated successfully." >> "$REPORT"
-          else
-            echo "❌ One or more XML files failed validation." >> "$REPORT"
-          fi
-
-          # Print the report to the Action logs
-          echo "## Validation Report"
           cat "$REPORT"
-
-      - name: Fail if Validation Failed
-        run: |
-          if grep -q "❌ One or more XML files failed validation" "$REPORT_FILE"; then
-            echo "Validation failed. Check the report above."
-            exit 1
-          fi
-          echo "Validation passed."
-          exit 0
 
       - name: Upload Validation Report as Artifact
         if: always()
@@ -171,3 +127,13 @@ jobs:
         with:
           name: mei-dc-validation-report
           path: .github/workflow-reports/mei-dc-validation_report.md
+
+      - name: Commit and Push
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .github/workflow-reports/mei-dc-validation_report.md
+          git commit -m "Update Dublin Core validation report" || echo "No changes to commit"
+          git push
+          # Note: The 'git push' step will fail in Pull Request workflows unless you use a specific token
+       

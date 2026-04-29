@@ -36,7 +36,6 @@ jobs:
 
       - name: Install Java and Saxon-HE
         run: |
-          REPORT="$REPORT_FILE"
           echo "Installing Java..."
           sudo apt-get update
           sudo apt-get install -y default-jre-headless
@@ -60,7 +59,6 @@ jobs:
         env:
           REPORT_FILE: ".github/workflow-reports/mei-dublin-core-extraction.md"
         run: |
-          REPORT="$REPORT_FILE"
 
           find . -type f -name "*.xml" \
             ! -path "./.github/*" \
@@ -69,9 +67,14 @@ jobs:
             ! -name "*.xml.bak" \
             > xml_files.txt
 
-          # write date and time to report
-          echo "Dublin Core metadata extraction started at $(date)" >> "$REPORT"
+          # Initialize the report
+          echo "### Dublin Core Extraction Report" > "$REPORT"
+          echo "Generated: $(date)" >> "$REPORT"
+          echo "" >> "$REPORT"
+          echo "Branch: ${{ github.ref_name }}" >> "$REPORT"
+          echo "" >> "$REPORT"
           echo "Found $(wc -l < xml_files.txt) XML files to process." >> "$REPORT"
+          echo "" >> "$REPORT"
 
           while IFS= read -r file; do
 
@@ -105,7 +108,6 @@ jobs:
         with:
           name: dublin-core-extraction-report
           path: .github/workflow-reports/mei-dublin-core-extraction.md
-
 
       - name: Commit and Push
         run: |
