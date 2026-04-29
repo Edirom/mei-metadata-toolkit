@@ -1,6 +1,14 @@
 # MEI Metadata Toolkit
 
-Toolkit for validation and conversion of MEI metadata to standard metadata.
+Toolkit for [validation](validation) and [conversion](conversion) of MEI metadata to standard metadata.
+
+The processing steps are available as workflows for GitHub Actions.
+
+## Usage
+
+Simply copy the files `mei-dublin-core-validation.yml` and `mei-dublin-core-extraction.yml` into the `.github/workflows` directory of the GitHub repository of your Digital Music Edition (or other type of resource containing MEI files).
+
+The workflows will search the complete repository for MEI files (files with `.xml` file ending and a `mei:mei` root element and a `@meiversion` attribute starting with "5"), and then validate and convert those files with the schema and scripts described below.
 
 
 ## Validation
@@ -15,7 +23,7 @@ The Schematron schema `src/schema/mei-dc.sch` validates MEI 5.x files for the pr
 * it helps identify whether MEI files contain sufficient descriptive metadata for reliable transformation into Dublin Core.
 
 
-## Generation
+## Conversion
 
 ### Dublin Core (DC) from MEI
 
