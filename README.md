@@ -1,6 +1,6 @@
 # MEI Metadata Toolkit
 
-Toolkit for [validation](validation) and [conversion](conversion) of MEI metadata to standard metadata.
+Toolkit for [validation](#validation) and [conversion](#conversion) of MEI metadata to standard metadata.
 
 The processing steps are available as workflows for GitHub Actions.
 
