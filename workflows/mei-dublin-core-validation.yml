@@ -9,19 +9,26 @@ on:
     branches: 
       - ftr/metadata-validation-and-generation
       - main
+  workflow_dispatch:
 
 jobs:
   validate-schematron:
     runs-on: ubuntu-latest
     
     steps:
-      - name: Checkout Repository
+      - name: Checkout current Repository
         uses: actions/checkout@v6
         with:
           ref: ftr/metadata-validation-and-generation
-          submodules: 'recursive' 
 
-      - name: Create Report Directory
+      - name: Checkout Tools Repository
+        uses: actions/checkout@v6
+        with:
+          repository: Edirom/mei-metadata-toolkit
+          ref: main
+          path: mei-metadata-toolkit
+
+      - name: Create necessary directories
         run: |
           mkdir -p .github/workflow-reports
 

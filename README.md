@@ -8,7 +8,12 @@ The processing steps are available as workflows for GitHub Actions.
 
 Simply copy the files `mei-dublin-core-validation.yml` and `mei-dublin-core-extraction.yml` into the `.github/workflows` directory of the GitHub repository of your Digital Music Edition (or other type of resource containing MEI files).
 
-The workflows will search the complete repository for MEI files (files with `.xml` file ending and a `mei:mei` root element and a `@meiversion` attribute starting with "5"), and then validate and convert those files with the schema and scripts described below.
+Inside the workflow files please adjust the action trigger and used branches to your settings.
+
+The workflows will use the tools from this repository and search the complete repository for MEI files (files with `.xml` file ending and a `mei:mei` root element and a `@meiversion` attribute starting with "5"). They then validate and convert those files with the schema and scripts described below.
+
+**Please note:** 
+The GitHub Actions will commit the extracted metadata into files in the directories `metadata/dc` and `metadata/cff` directly in the repository. Furthermore, they will write processing reports into the directory `.github/workflow-reports`.
 
 
 ## Validation

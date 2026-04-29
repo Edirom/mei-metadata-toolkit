@@ -21,14 +21,14 @@
     <!-- Global parameters -->
     <xsl:param name="mode" select="'xml'" as="xs:string"/><!-- xml or yaml -->
     <xsl:param name="scope" select="'global'" as="xs:string"/><!-- single or global -->
-    <xsl:param name="directories" select="('file:/home/djettka/git-clones/Edirom/EditionExample')" as="xs:string+"/>
+    <xsl:param name="input-files" as="xs:string+"/><!-- paths to input files -->
 
 
     <!-- Global variables -->
     <xsl:variable name="dc-all">
-        <xsl:for-each select="$directories">
-            <oai_dc:dc eor:dir="{.}">
-                <xsl:for-each select="collection(concat(., '?select=*.xml;recurse=yes;on-error=warning'))/mei:mei">
+        <xsl:for-each select="$input-files">
+            <oai_dc:dc>
+                <xsl:for-each select="document(.)//mei:mei">
                     <xsl:call-template name="generate-oai_dc-xml"/>
                 </xsl:for-each>
             </oai_dc:dc>
