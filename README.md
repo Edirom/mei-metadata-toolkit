@@ -6,7 +6,7 @@ The processing steps are available as workflows for GitHub Actions.
 
 ## Usage
 
-Simply copy the following files (or a selection) into the `.github/workflows` directory of the GitHub repository of your Digital Music Edition (or other type of resource containing MEI files):
+Simply copy the following files (or a selection) from the directory `workflows` into the `.github/workflows` directory of the GitHub repository of your Digital Music Edition (or other type of resource containing MEI files):
 
 * `mei-dublin-core-validation.yml` - Validation of Dublin Core compliance of MEI files within the project, also see section [Dublin Core Compliance of MEI](#dublin-core-compliance-of-mei)
 * `mei-dublin-core-extraction.yml` - Extraction of Dublin Core XML files from MEI files in the project, also see section [Dublin Core (DC) from MEI](#dublin-core-dc-from-mei)
@@ -14,7 +14,7 @@ Simply copy the following files (or a selection) into the `.github/workflows` di
 
 Inside the workflow files please adjust the action trigger and used branches to your preferred settings.
 
-The workflows will use the tools from this repository and search the complete repository for MEI files (files with `.xml` file ending and a `mei:mei` root element and a `@meiversion` attribute starting with "5"). They then validate and convert those files with the schema and scripts described below.
+The workflows will use the tools from this repository (via a actions/checkout step) and search the complete repository for MEI files (files with `.xml` file ending and a `mei:mei` root element and a `@meiversion` attribute starting with "5"). They then validate and convert those files with the schema and scripts described below.
 
 **Please note:** 
 The GitHub Actions will commit the extracted metadata into files in the directories `metadata/dc` and `metadata/cff` directly in the repository. Furthermore, they will write processing reports into the directory `.github/workflow-reports`.
