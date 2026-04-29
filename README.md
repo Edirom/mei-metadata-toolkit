@@ -1,2 +1,45 @@
 # MEI Metadata Toolkit
-Toolkit for validation and conversion of MEI metadata
+
+Toolkit for validation and conversion of MEI metadata to standard metadata.
+
+
+## Validation
+
+# Dublin Core Compliance of MEI
+
+The Schematron schema src/schema/mei-dc.sch validates MEI 5.x files for the presence of metadata needed to generate Dublin Core records
+
+* it checks that the root <mei> element declares an MEI version starting with 5 and requires at least one title in <mei:titleStmt>, since this is essential for mapping to dc:title
+* in addition, it issues warnings when optional metadata fields are missing that would otherwise be used to derive Dublin Core elements such as dc:creator, dc:subject, dc:description, dc:publisher, dc:contributor, dc:date, dc:type, dc:identifier, dc:source, dc:language, dc:relation, dc:coverage, and dc:rights
+* the schema is designed to be safely run on collections containing different XML files, because its rules only apply to documents with an MEI root element
+* it helps identify whether MEI files contain sufficient descriptive metadata for reliable transformation into Dublin Core.
+
+
+## Generation
+
+### Dublin Core (DC) from MEI
+
+The XSLT stylesheet src/xsl/mei2dc.xsl transforms metadata from MEI 5.x files into OAI Dublin Core XML.
+
+* the xsl checks whether the input document is a valid MEI file with a meiversion starting with 5
+  * if so, it creates an <oai_dc:dc> record using the standard Dublin Core Elements namespace
+  * the transformation maps MEI metadata such as titles, creators, contributors, publishers, dates, identifiers, sources, languages, repositories, coverage information, and rights statements to the corresponding Dublin Core fields
+  * it also adds a fixed format value of text/mei+xml and derives a version identifier from the latest entry in the MEI revision history
+* if the input file is not an MEI 5.x document, no Dublin Core metadata is generated.
+
+How to apply:
+
+### Citation File Format (CFF) from MEI
+
+The XSLT stylesheet src/xsl/mei2cff.xsl generates a Citation File Format (CFF) YAML file from metadata extracted from MEI.
+
+* it imports the mei2dc.xsl to first convert MEI metadata into Dublin Core
+* then it collects metadata from all .xml files in the configured directory or directories
+* the resulting Dublin Core fields are mapped to CFF properties such as title, authors, abstract, contact, date-released, identifiers, keywords, license, repository, and version
+* repeated values are deduplicated where appropriate, DOI identifiers are marked as such, and the output is serialized as plain text in valid CFF-style YAML.
+* the generated file uses CFF version 1.2.0, assigns the resource type dataset, and includes a message noting that the file was generated from MEI metadata via the MEI-to-Dublin-Core and Dublin-Core-to-CFF transformation workflow.
+
+
+## License
+
+This code is released to the public under the terms of the MIT open source license.
