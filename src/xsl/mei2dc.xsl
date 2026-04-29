@@ -112,7 +112,7 @@
             </xsl:for-each>
             
             <!-- 12. Language: A language of the resource -->
-            <xsl:for-each select="//mei:langUsage/mei:language">
+            <xsl:for-each select="//mei:langUsage/mei:language/(text()[not(matches(.,'^\s*$'))]|@auth)">
                 <dc:language><xsl:value-of select="."/></dc:language>
             </xsl:for-each>
                     
