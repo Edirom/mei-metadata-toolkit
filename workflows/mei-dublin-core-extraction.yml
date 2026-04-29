@@ -33,9 +33,9 @@ jobs:
           mkdir -p .github/workflow-reports
           mkdir -p metadata/dc
           echo "OUTPUT_DIR=$(pwd)/metadata/dc" >> $GITHUB_ENV
-
       - name: Install Java and Saxon-HE
         run: |
+          REPORT="$REPORT_FILE"
           echo "Installing Java..."
           sudo apt-get update
           sudo apt-get install -y default-jre-headless
@@ -59,29 +59,24 @@ jobs:
         env:
           REPORT_FILE: ".github/workflow-reports/mei-dublin-core-extraction.md"
         run: |
-
+          REPORT="$REPORT_FILE"
+          # Initialize the report
+          echo "### Dublin Core Extraction Report" > "$REPORT"
+          echo "" >> "$REPORT"
+          echo "Branch: ${{ github.ref_name }}" >> "$REPORT"
+          echo "Generated: $(date)" >> "$REPORT"
+          echo "" >> "$REPORT"
+          echo "Found $(wc -l < xml_files.txt) XML files to process." >> "$REPORT"
+          echo "" >> "$REPORT"
           find . -type f -name "*.xml" \
             ! -path "./.github/*" \
             ! -path "./vendor/*" \
             ! -path "./.git/*" \
             ! -name "*.xml.bak" \
             > xml_files.txt
-
-          # Initialize the report
-          echo "### Dublin Core Extraction Report" > "$REPORT"
-          echo "Generated: $(date)" >> "$REPORT"
-          echo "" >> "$REPORT"
-          echo "Branch: ${{ github.ref_name }}" >> "$REPORT"
-          echo "" >> "$REPORT"
-          echo "Found $(wc -l < xml_files.txt) XML files to process." >> "$REPORT"
-          echo "" >> "$REPORT"
-
           while IFS= read -r file; do
-
             java -jar "$SAXON_JAR" -o:"$OUTPUT_DIR/$(basename "$file" .xml)-dc.xml" -s:"$file" -xsl:"$(pwd)/mei-metadata-toolkit/src/xsl/mei2dc.xsl"
-
             output_file="$OUTPUT_DIR/$(basename "$file" .xml)-dc.xml"
-
             if [ -f "$output_file" ]; then
               if grep -q "<oai_dc:dc" "$output_file"; then
                 echo "Dublin Core metadata extracted successfully to $output_file" >> "$REPORT"
@@ -92,16 +87,12 @@ jobs:
             else
               echo "Failed to create output file for $file" >> "$REPORT"
             fi
-
             echo "" >> "$REPORT"
             
           done < xml_files.txt
-
           echo "Dublin Core extraction completed. Extracted metadata files are located in $OUTPUT_DIR." >> "$REPORT"
-
           cat "$REPORT"
-
-
+          
       - name: Upload Validation Report as Artifact
         if: always()
         uses: actions/upload-artifact@v4
