@@ -21,26 +21,37 @@
     <!-- Global parameters -->
     <xsl:param name="mode" select="'xml'" as="xs:string"/><!-- xml or yaml -->
     <xsl:param name="scope" select="'global'" as="xs:string"/><!-- single or global -->
-    <xsl:param name="input-files" as="xs:string+"/><!-- paths to input files -->
+    <xsl:param name="input-files" as="xs:string*"/><!-- paths to input files -->
 
 
     <!-- Global variables -->
     <xsl:variable name="dc-all">
-        <xsl:for-each select="$input-files">
-            <oai_dc:dc>
-                <xsl:for-each select="document(.)//mei:mei">
-                    <xsl:call-template name="generate-oai_dc-xml"/>
-                </xsl:for-each>
-            </oai_dc:dc>
-        </xsl:for-each>        
+        <xsl:choose>
+            <xsl:when test="$input-files">
+                <xsl:for-each select="$input-files">
+                    <oai_dc:dc>
+                        <xsl:for-each select="document(.)//mei:mei">
+                            <xsl:call-template name="generate-oai_dc-xml"/>
+                        </xsl:for-each>
+                    </oai_dc:dc>
+                </xsl:for-each>                        
+            </xsl:when>
+            <xsl:otherwise>
+                <oai_dc:dc>
+                    <xsl:for-each select="//mei:mei">
+                        <xsl:call-template name="generate-oai_dc-xml"/>
+                    </xsl:for-each>
+                </oai_dc:dc>
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:variable>
 
 
     <!-- Template matching root -->
-    <xsl:template match="/">
-        <xsl:for-each select="dc-all">
+    <xsl:template match="/">        
+        <xsl:for-each select="$dc-all">
             <xsl:call-template name="generate-cff-yaml"/>
-        </xsl:for-each>     
+        </xsl:for-each>                     
     </xsl:template>
 
 
@@ -91,7 +102,7 @@
             <xsl:for-each select="distinct-values(current-group())">
                 <xsl:text>  - value: </xsl:text><xsl:value-of select="."/><xsl:text>&#10;</xsl:text>
                 <xsl:choose>
-                    <xsl:when test="matches(., 'doi[\.:\/]')">
+                    <xsl:when test="matches(., 'doi[\.:/]')">
                         <xsl:text>    type: doi&#10;</xsl:text>
                     </xsl:when>
                     <xsl:otherwise/>
