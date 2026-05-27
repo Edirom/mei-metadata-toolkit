@@ -28,7 +28,7 @@
     <xsl:variable name="dc-all">
         <xsl:choose>
             <xsl:when test="$input-files">
-                <xsl:for-each select="$input-files">
+                <xsl:for-each select="tokenize($input-files, ',')">
                     <oai_dc:dc>
                         <xsl:for-each select="document(.)//mei:mei">
                             <xsl:call-template name="generate-oai_dc-xml"/>
