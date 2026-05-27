@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar xmlns="http://relaxng.org/ns/structure/1.0"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"
+   xmlns:xi="http://www.w3.org/2001/XInclude"
+   ns="http://www.music-encoding.org/ns/mei">
+   
+   <define name="anyElement">
+      <element>
+         <anyName/>
+         <zeroOrMore>
+            <attribute>
+               <anyName/>
+            </attribute>
+         </zeroOrMore>
+         <zeroOrMore>
+            <choice>
+               <text/>
+               <ref name="anyElement"/>
+            </choice>
+         </zeroOrMore>
+      </element>
+   </define>
+   
+   <start>
+      <ref name="anyElement"/>
+   </start>
+   
+   <!-- Include Schematron rules -->
+   <xi:include href="mei-dc.sch" />
+   
+</grammar>
