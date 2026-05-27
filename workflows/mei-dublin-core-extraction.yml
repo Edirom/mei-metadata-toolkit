@@ -32,7 +32,8 @@ jobs:
         run: |
           mkdir -p .github/workflow-reports
           mkdir -p metadata/dc
-          echo "OUTPUT_DIR=$(pwd)/metadata/dc" >> $GITHUB_ENV
+          echo "OUTPUT_DIR=metadata/dc" >> $GITHUB_ENV
+      
       - name: Install Java and Saxon-HE
         run: |
           REPORT="$REPORT_FILE"
@@ -60,6 +61,10 @@ jobs:
           REPORT_FILE: ".github/workflow-reports/mei-dublin-core-extraction.md"
         run: |
           REPORT="$REPORT_FILE"
+          
+          grep -r -l -H --include \*.xml --exclude-dir=.github "http://www.music-encoding.org/ns/mei" . \
+            > xml_files.txt
+          
           # Initialize the report
           echo "### Dublin Core Extraction Report" > "$REPORT"
           echo "" >> "$REPORT"
@@ -68,20 +73,18 @@ jobs:
           echo "" >> "$REPORT"
           echo "Found $(wc -l < xml_files.txt) XML files to process." >> "$REPORT"
           echo "" >> "$REPORT"
-          find . -type f -name "*.xml" \
-            ! -path "./.github/*" \
-            ! -path "./vendor/*" \
-            ! -path "./.git/*" \
-            ! -name "*.xml.bak" \
-            > xml_files.txt
+
           while IFS= read -r file; do
-            java -jar "$SAXON_JAR" -o:"$OUTPUT_DIR/$(basename "$file" .xml)-dc.xml" -s:"$file" -xsl:"$(pwd)/mei-metadata-toolkit/src/xsl/mei2dc.xsl"
+ 
+            echo "Processing: $file <br>"            >> "$REPORT"
+ 
+ java -jar "$SAXON_JAR" -o:"$OUTPUT_DIR/$(basename "$file" .xml)-dc.xml" -s:"$file" -xsl:"$(pwd)/mei-metadata-toolkit/src/xsl/mei2dc.xsl"
             output_file="$OUTPUT_DIR/$(basename "$file" .xml)-dc.xml"
             if [ -f "$output_file" ]; then
               if grep -q "<oai_dc:dc" "$output_file"; then
-                echo "Dublin Core metadata extracted successfully to $output_file" >> "$REPORT"
+                echo " ✅ Dublin Core metadata extracted successfully to $output_file" >> "$REPORT"
               else
-                echo "No Dublin Core metadata found in $file." >> "$REPORT"
+                echo " ❌ No Dublin Core metadata found in $file" >> "$REPORT"
                 rm "$output_file"
               fi
             else
@@ -107,6 +110,7 @@ jobs:
           git add .github/workflow-reports/mei-dublin-core-extraction.md
           git add metadata/dc/*.xml
           git commit -m "Update Dublin Core extraction report" || echo "No changes to commit"
+          git pull --rebase
           git push
           # Note: The 'git push' step will fail in Pull Request workflows unless you use a specific token
         
