@@ -141,7 +141,7 @@
         <xsl:param name="nodes" as="node()*"/>
         <xsl:param name="separator" as="xs:string"/>
         <xsl:variable name="values" as="xs:string*" select="$nodes//text()[not(matches(.,'^\s*$'))]"/>
-        <xsl:value-of select="string-join(replace($values, '\s+', ' '), $separator)"/>
+        <xsl:value-of select="replace(string-join($values, $separator), '\s+', ' ')"/>
     </xsl:function>
 
 </xsl:stylesheet>
