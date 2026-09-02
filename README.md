@@ -50,8 +50,8 @@ How to apply:
 
 The XSLT stylesheet `src/xsl/mei2cff.xsl` generates a Citation File Format (CFF) YAML file from metadata extracted from MEI.
 
-* it imports the `mei2dc.xsl` to first convert MEI metadata into Dublin Core
-* then it collects metadata from all .xml files in the configured directory or directories
+* it imports the `mei2dc.xsl` and `dc2cff.xsl` to convert MEI metadata into Dublin Core and then into Citation File Format (CFF) 
+* it collects metadata from all .xml files in the configured directory or directories
 * the resulting Dublin Core fields are mapped to CFF properties such as title, authors, abstract, contact, date-released, identifiers, keywords, license, repository, and version
 * repeated values are deduplicated where appropriate, DOI identifiers are marked as such, and the output is serialized as plain text in valid CFF-style YAML.
 * the generated file uses CFF version 1.2.0, assigns the resource type dataset, and includes a message noting that the file was generated from MEI metadata via the MEI-to-Dublin-Core and Dublin-Core-to-CFF transformation workflow.
