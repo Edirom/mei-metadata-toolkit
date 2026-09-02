@@ -31,7 +31,7 @@
         <!-- Open Archives Inititative (OAI) root element -->
         <oai_dc:dc xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">
             
-            <xsl:comment>This Dublin Core file was generated from MEI metadata using mei2dc.xsl</xsl:comment>
+            <xsl:comment>This Dublin Core file was generated using the mei-metadata-toolkit (https://github.com/Edirom/mei-metadata-toolkit)</xsl:comment>
 
             <!-- 1. Title: The name given to the resource -->
             <xsl:for-each select="//mei:titleStmt/mei:title">
