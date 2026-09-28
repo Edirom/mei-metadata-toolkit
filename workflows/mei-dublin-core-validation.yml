@@ -82,11 +82,10 @@ jobs:
             
             echo "Validating: $file <br>" >> "$REPORT"
             
-            # Verify the            schematron file exists
- if [            ! -f "$SCHEMATRON_FILE" ]; then
- echo "Error: Schematron file
-            not found."
- exit 1
+            # Verify the schematron file exists
+            if [! -f "$SCHEMATRON_FILE" ]; then
+              echo "Error: Schematron file not found."
+              exit 1
             fi
 
             output_file="$OUTPUT_DIR/$(basename "$file" .xml)-validation.xml"
